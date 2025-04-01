@@ -146,6 +146,8 @@ const config: StorybookConfig = {
         options: {
             // 👇 Here configure the framework
             symfony: {
+                projectDir: path.resolve(__dirname, '..'),
+                storybookCachePath: path.resolve(__dirname, `../var/cache/\${process.env.APP_ENV}/storybook`),
                 server: 'https://localhost',
                 proxyPaths: [
                     '/assets',
