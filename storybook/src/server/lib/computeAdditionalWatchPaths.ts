@@ -17,11 +17,12 @@ export const computeAdditionalWatchPaths = (paths: string[], baseDir: string) =>
     };
 
     paths
-        .map((v) => join(baseDir, v))
         .forEach((watchPath) => {
-            if (isGlob(watchPath)) {
+            const absoluteWatchPath = join(baseDir, watchPath);
+
+            if (isGlob(absoluteWatchPath)) {
                 result.files.push(
-                    ...glob.sync(watchPath, {
+                    ...glob.sync(absoluteWatchPath, {
                         dot: true,
                         absolute: true,
                     })
@@ -29,6 +30,9 @@ export const computeAdditionalWatchPaths = (paths: string[], baseDir: string) =>
             } else if (fs.existsSync(watchPath)) {
                 const stats = fs.lstatSync(watchPath);
                 (stats.isDirectory() ? result.dirs : result.files).push(watchPath);
+            } else if (fs.existsSync(absoluteWatchPath)) {
+                const stats = fs.lstatSync(absoluteWatchPath);
+                (stats.isDirectory() ? result.dirs : result.files).push(absoluteWatchPath);
             } else {
                 logger.warn(dedent`
                     Ignoring additional watch path '${watchPath}': path doesn't exists.

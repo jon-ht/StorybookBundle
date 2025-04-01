@@ -15,7 +15,7 @@ type BuildOptions = {
     twigComponent: TwigComponentConfiguration;
     twig: TwigConfiguration;
     additionalWatchPaths: string[];
-    templatePathAliases: {
+    projectPathAliases: {
         [p: string]: string;
     };
 };
@@ -56,7 +56,7 @@ const getBuildOptions = async (symfonyOptions: SymfonyOptions) => {
             paths: twigPaths,
         },
         additionalWatchPaths: symfonyOptions.additionalWatchPaths || [],
-        templatePathAliases: symfonyOptions.templatePathAliases || {},
+        projectPathAliases: symfonyOptions.projectPathAliases || {},
     } as BuildOptions;
 };
 
@@ -84,7 +84,7 @@ export const webpack: StorybookConfig['webpack'] = async (config, options) => {
                       }),
                 TwigLoaderPlugin.webpack({
                     twigComponentConfiguration: symfonyOptions.twigComponent,
-                    templatePathAliases: symfonyOptions.templatePathAliases,
+                    projectPathAliases: symfonyOptions.projectPathAliases,
                 }),
             ],
         ],

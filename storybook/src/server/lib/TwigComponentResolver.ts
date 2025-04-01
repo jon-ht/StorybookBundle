@@ -5,7 +5,7 @@ import dedent from 'ts-dedent';
 export class TwigComponentResolver {
     constructor(
         private config: TwigComponentConfiguration,
-        private templatePathAliases: {
+        private projectPathAliases: {
             [p: string]: string;
         } = {}
     ) {}
@@ -16,7 +16,7 @@ export class TwigComponentResolver {
         };
 
         const resolvePathAlias = (file: string) => {
-            for (const [alias, resolvedPath] of Object.entries(this.templatePathAliases)) {
+            for (const [alias, resolvedPath] of Object.entries(this.projectPathAliases)) {
                 if (file.startsWith(alias)) {
                     return file.replace(alias, resolvedPath);
                 }

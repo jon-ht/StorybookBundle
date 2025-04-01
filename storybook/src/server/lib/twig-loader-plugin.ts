@@ -10,7 +10,7 @@ const PLUGIN_NAME = 'twig-loader';
 
 export type Options = {
     twigComponentConfiguration: TwigComponentConfiguration;
-    templatePathAliases: {
+    projectPathAliases: {
         [p: string]: string;
     };
 };
@@ -21,8 +21,8 @@ export type Options = {
  * Generates JS modules to export raw template source and imports required components.
  */
 export const TwigLoaderPlugin = createUnplugin<Options>((options) => {
-    const { twigComponentConfiguration, templatePathAliases } = options;
-    const resolver = new TwigComponentResolver(twigComponentConfiguration, templatePathAliases);
+    const { twigComponentConfiguration, projectPathAliases } = options;
+    const resolver = new TwigComponentResolver(twigComponentConfiguration, projectPathAliases);
     return {
         name: PLUGIN_NAME,
         enforce: 'pre',

@@ -316,7 +316,7 @@ const config: StorybookConfig = {
                  *
                  * @var object
                  */
-                templatePathAliases: {
+                projectPathAliases: {
                     [path.resolve(__dirname, '..')]: '/var/www/html',
                 }
             }

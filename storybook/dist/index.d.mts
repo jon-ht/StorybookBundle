@@ -60,7 +60,7 @@ type SymfonyOptions = {
      *
      * Example: { __dirname: '/var/www' }
      */
-    templatePathAliases?: {
+    projectPathAliases?: {
         [p: string]: string;
     };
 };

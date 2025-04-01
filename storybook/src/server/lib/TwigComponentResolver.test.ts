@@ -11,12 +11,12 @@ const twigComponentConfig = {
     },
 };
 
-const templatePathAliases = {
+const projectPathAliases = {
     // Simulates a path alias for the "Source" directory
     [`${fixturesDir}/alias/Source`]: `${fixturesDir}/alias/Target`,
 };
 
-const resolver = new TwigComponentResolver(twigComponentConfig, templatePathAliases);
+const resolver = new TwigComponentResolver(twigComponentConfig, projectPathAliases);
 
 describe('resolveFileFromName', () => {
     it('resolves component path without namespace', () => {
