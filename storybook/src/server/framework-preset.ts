@@ -1,8 +1,4 @@
-import {
-    getSymfonyConfig,
-    TwigComponentConfiguration,
-    TwigConfiguration,
-} from './lib/symfony';
+import { getSymfonyConfig, TwigComponentConfiguration, TwigConfiguration } from './lib/symfony';
 import { StorybookConfig, SymfonyOptions } from '../types';
 import { join } from 'path';
 import { PreviewCompilerPlugin } from './lib/preview-compiler-plugin';
@@ -76,7 +72,7 @@ export const webpack: StorybookConfig['webpack'] = async (config, options) => {
                 options.configType === 'PRODUCTION'
                     ? PreviewCompilerPlugin.webpack({
                           server: frameworkOptions.symfony.server,
-                    })
+                      })
                     : DevPreviewCompilerPlugin.webpack({
                           projectDir: frameworkOptions.symfony.projectDir,
                           server: frameworkOptions.symfony.server,

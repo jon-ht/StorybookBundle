@@ -23,12 +23,12 @@ export const generateSymfonyPreview = async (server: string) => {
     }
 
     return html;
-}
+};
 
 type SymfonyConfiguration = {
     twig_config: SymfonyTwigConfiguration;
     twig_component_config: SymfonyTwigComponentConfiguration;
-}
+};
 
 export const getSymfonyConfig = async (storybookCachePath: string): Promise<SymfonyConfiguration> => {
     const filePath = `${storybookCachePath}/symfony_parameters.json`;

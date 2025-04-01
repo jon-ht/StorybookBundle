@@ -51,7 +51,9 @@ describe('Symfony utils', () => {
         it('returns a JS object', async () => {
             const storybookCachePath = `${__dirname}/__fixtures__/var/cache/dev/storybook`;
 
-            const symfonyParameters = JSON.parse(fs.readFileSync(`${storybookCachePath}/symfony_parameters.json`, 'utf8'));
+            const symfonyParameters = JSON.parse(
+                fs.readFileSync(`${storybookCachePath}/symfony_parameters.json`, 'utf8')
+            );
 
             await expect(getSymfonyConfig(storybookCachePath)).resolves.toEqual(symfonyParameters);
         });

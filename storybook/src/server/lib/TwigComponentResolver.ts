@@ -22,7 +22,7 @@ export class TwigComponentResolver {
                 }
             }
             return file;
-        }
+        };
 
         const resolvedFile = resolvePathAlias(file);
 
