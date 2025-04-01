@@ -15,16 +15,7 @@ export class TwigComponentResolver {
             return file.replace(dir, '').replace(/^\//, '').replaceAll('/', ':').replace('.html.twig', '');
         };
 
-        const resolvePathAlias = (file: string) => {
-            for (const [alias, resolvedPath] of Object.entries(this.projectPathAliases)) {
-                if (file.startsWith(alias)) {
-                    return file.replace(alias, resolvedPath);
-                }
-            }
-            return file;
-        };
-
-        const resolvedFile = resolvePathAlias(file);
+        const resolvedFile = this.resolvePathAlias(file);
 
         for (const [namespace, twigDirectories] of Object.entries(this.config.namespaces)) {
             const matchingDirectory = twigDirectories.find((dir) => resolvedFile.startsWith(dir));
@@ -55,20 +46,20 @@ export class TwigComponentResolver {
             const namespacePaths = this.config.namespaces[namespace];
             if (namespacePaths.length > 0) {
                 for (const namespacePath of this.config.namespaces[namespace]) {
-                    lookupPaths.push(path.join(namespacePath, dirParts.slice(1).join('/')));
+                    lookupPaths.push(path.join(this.resolvePathAlias(namespacePath), dirParts.slice(1).join('/')));
                 }
             }
         }
 
         if (this.config.namespaces[''] && this.config.namespaces[''].length > 0) {
             for (const namespacePath of this.config.namespaces['']) {
-                lookupPaths.push(path.join(namespacePath, dirParts.join('/')));
+                lookupPaths.push(path.join(this.resolvePathAlias(namespacePath), dirParts.join('/')));
             }
         }
 
         if (this.config.anonymousTemplateDirectory.length > 0) {
             for (const namespacePath of this.config.anonymousTemplateDirectory) {
-                lookupPaths.push(path.join(namespacePath, dirParts.join('/')));
+                lookupPaths.push(path.join(this.resolvePathAlias(namespacePath), dirParts.join('/')));
             }
         }
 
@@ -77,5 +68,17 @@ export class TwigComponentResolver {
         } catch (err) {
             throw new Error(dedent`Unable to find template file for component "${name}": ${err}`);
         }
+    }
+
+    private resolvePathAlias(file: string) {
+        for (const [alias, resolvedPath] of Object.entries(this.projectPathAliases)) {
+            if (file.startsWith(alias)) {
+                return file.replace(alias, resolvedPath);
+            }
+            if (file.startsWith(resolvedPath)) {
+                return file.replace(resolvedPath, alias);
+            }
+        }
+        return file;
     }
 }
