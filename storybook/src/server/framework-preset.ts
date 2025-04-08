@@ -17,11 +17,11 @@ type BuildOptions = {
 };
 
 const getBuildOptions = async (symfonyOptions: SymfonyOptions) => {
-    const symfonyConfig = await getSymfonyConfig(symfonyOptions.storybookCachePath);
+    const { twig_config, twig_component_config } = await getSymfonyConfig(symfonyOptions.storybookCachePath);
 
     const componentNamespaces: { [p: string]: string[] } = {};
 
-    const twigPaths: string[] = Object.keys(symfonyConfig.twig_config.paths).map((key) => {
+    const twigPaths: string[] = Object.keys(twig_config.paths).map((key) => {
         if (key.startsWith(symfonyOptions.projectDir)) {
             return `${key}/`;
         }
@@ -34,14 +34,19 @@ const getBuildOptions = async (symfonyOptions: SymfonyOptions) => {
     }
 
     for (const { name_prefix: namePrefix, template_directory: templateDirectory } of Object.values(
-        symfonyConfig.twig_component_config.defaults
+        twig_component_config.defaults
     )) {
-        componentNamespaces[namePrefix] = twigPaths.map((twigPath) => join(twigPath, templateDirectory));
+        componentNamespaces[namePrefix] = [join(twig_config.default_path, templateDirectory)];
     }
 
-    const anonymousNamespace: string[] = twigPaths.map((twigPath) =>
-        join(twigPath, symfonyConfig.twig_component_config.anonymous_template_directory)
-    );
+    Object.entries(twig_config.paths).forEach(([path, alias]) => {
+        componentNamespaces[alias] = [join(path, twig_component_config.anonymous_template_directory)];
+    });
+
+    // TODO Should be a regular string ?
+    const anonymousNamespace: string[] = [
+        join(twig_config.default_path, twig_component_config.anonymous_template_directory),
+    ];
 
     return {
         twigComponent: {

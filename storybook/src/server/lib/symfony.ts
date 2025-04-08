@@ -54,6 +54,7 @@ export type TwigComponentConfiguration = {
 };
 
 type SymfonyTwigConfiguration = {
+    default_path: string;
     paths: {
         [p: string]: string;
     };
