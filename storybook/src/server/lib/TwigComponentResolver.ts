@@ -5,9 +5,7 @@ import dedent from 'ts-dedent';
 export class TwigComponentResolver {
     constructor(
         private config: TwigComponentConfiguration,
-        private projectPathAliases: {
-            [p: string]: string;
-        } = {}
+        private projectDir: string
     ) {}
 
     resolveNameFromFile(file: string) {
@@ -15,7 +13,7 @@ export class TwigComponentResolver {
             return file.replace(dir, '').replace(/^\//, '').replaceAll('/', ':').replace('.html.twig', '');
         };
 
-        const resolvedFile = this.resolvePathAlias(file);
+        const resolvedFile = this.resolveRelativePath(file);
 
         for (const [namespace, twigDirectories] of Object.entries(this.config.namespaces)) {
             const matchingDirectory = twigDirectories.find((dir) => resolvedFile.startsWith(dir));
@@ -46,20 +44,20 @@ export class TwigComponentResolver {
             const namespacePaths = this.config.namespaces[namespace];
             if (namespacePaths.length > 0) {
                 for (const namespacePath of this.config.namespaces[namespace]) {
-                    lookupPaths.push(path.join(this.resolvePathAlias(namespacePath), dirParts.slice(1).join('/')));
+                    lookupPaths.push(path.join(this.resolveRelativePath(namespacePath), dirParts.slice(1).join('/')));
                 }
             }
         }
 
         if (this.config.namespaces[''] && this.config.namespaces[''].length > 0) {
             for (const namespacePath of this.config.namespaces['']) {
-                lookupPaths.push(path.join(this.resolvePathAlias(namespacePath), dirParts.join('/')));
+                lookupPaths.push(path.join(this.resolveRelativePath(namespacePath), dirParts.join('/')));
             }
         }
 
         if (this.config.anonymousTemplateDirectory.length > 0) {
             for (const namespacePath of this.config.anonymousTemplateDirectory) {
-                lookupPaths.push(path.join(this.resolvePathAlias(namespacePath), dirParts.join('/')));
+                lookupPaths.push(path.join(this.resolveRelativePath(namespacePath), dirParts.join('/')));
             }
         }
 
@@ -70,15 +68,11 @@ export class TwigComponentResolver {
         }
     }
 
-    private resolvePathAlias(file: string) {
-        for (const [alias, resolvedPath] of Object.entries(this.projectPathAliases)) {
-            if (file.startsWith(alias)) {
-                return file.replace(alias, resolvedPath);
-            }
-            if (file.startsWith(resolvedPath)) {
-                return file.replace(resolvedPath, alias);
-            }
-        }
-        return file;
+    /**
+     * Remove the project path from the file path.
+     * This is useful to have relative paths and not depend on host paths.
+     */
+    private resolveRelativePath(file: string) {
+        return file.replace(this.projectDir, '');
     }
 }

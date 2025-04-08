@@ -1,6 +1,6 @@
 import { getSymfonyConfig, TwigComponentConfiguration, TwigConfiguration } from './lib/symfony';
 import { StorybookConfig, SymfonyOptions } from '../types';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { PreviewCompilerPlugin } from './lib/preview-compiler-plugin';
 import { DevPreviewCompilerPlugin } from './lib/dev-preview-compiler-plugin';
 import { TwigLoaderPlugin } from './lib/twig-loader-plugin';
@@ -11,9 +11,6 @@ type BuildOptions = {
     twigComponent: TwigComponentConfiguration;
     twig: TwigConfiguration;
     additionalWatchPaths: string[];
-    projectPathAliases: {
-        [p: string]: string;
-    };
 };
 
 const getBuildOptions = async (symfonyOptions: SymfonyOptions) => {
@@ -21,16 +18,10 @@ const getBuildOptions = async (symfonyOptions: SymfonyOptions) => {
 
     const componentNamespaces: { [p: string]: string[] } = {};
 
-    const twigPaths: string[] = Object.keys(twig_config.paths).map((key) => {
-        if (key.startsWith(symfonyOptions.projectDir)) {
-            return `${key}/`;
-        }
-
-        return `${symfonyOptions.projectDir}/${key}/`;
-    });
+    const twigPaths: string[] = Object.keys(twig_config.paths);
 
     if (twigPaths.length === 0) {
-        twigPaths.push(`${symfonyOptions.projectDir}/templates`);
+        twigPaths.push('templates');
     }
 
     for (const { name_prefix: namePrefix, template_directory: templateDirectory } of Object.values(
@@ -57,7 +48,6 @@ const getBuildOptions = async (symfonyOptions: SymfonyOptions) => {
             paths: twigPaths,
         },
         additionalWatchPaths: symfonyOptions.additionalWatchPaths || [],
-        projectPathAliases: symfonyOptions.projectPathAliases || {},
     } as BuildOptions;
 };
 
@@ -79,13 +69,13 @@ export const webpack: StorybookConfig['webpack'] = async (config, options) => {
                           server: frameworkOptions.symfony.server,
                       })
                     : DevPreviewCompilerPlugin.webpack({
-                          projectDir: frameworkOptions.symfony.projectDir,
+                          projectDir: resolve(),
                           server: frameworkOptions.symfony.server,
                           additionalWatchPaths: symfonyOptions.additionalWatchPaths,
                       }),
                 TwigLoaderPlugin.webpack({
+                    projectDir: resolve(),
                     twigComponentConfiguration: symfonyOptions.twigComponent,
-                    projectPathAliases: symfonyOptions.projectPathAliases,
                 }),
             ],
         ],

@@ -17,7 +17,6 @@ class StorybookCacheWarmer implements CacheWarmerInterface
         private readonly ?string $cacheDir,
         private readonly bool $debug,
         private readonly string $projectDir,
-        private readonly array $storybookConfig,
         private readonly array $twigConfig,
         private readonly array $twigComponentConfig,
     ) {
@@ -54,11 +53,38 @@ class StorybookCacheWarmer implements CacheWarmerInterface
     private function generateSymfonyParameters(ConfigCacheInterface $cache): void
     {
         $parameters = [
-            'storybook_bundle_config' => $this->storybookConfig,
-            'twig_config' => $this->twigConfig,
-            'twig_component_config' => $this->twigComponentConfig,
+            'twig_config' => [
+                'default_path' => $this->twigConfig['default_path'],
+                'paths' => $this->twigConfig['paths'],
+            ],
+            'twig_component_config' => [
+                'anonymous_template_directory' => $this->twigComponentConfig['anonymous_template_directory'],
+                'defaults' => $this->twigComponentConfig['defaults'],
+            ],
         ];
 
-        $cache->write(json_encode($parameters, JSON_PRETTY_PRINT));
+        $cache->write(json_encode($this->stripProjectDirectory($parameters), JSON_PRETTY_PRINT));
+    }
+
+    private function stripProjectDirectory(array $array): array
+    {
+        $sanitizedArray = [];
+        foreach ($array as $key => $value) {
+            if (is_string($value) && str_starts_with($value, $this->projectDir)) {
+                $value = str_replace($this->projectDir, '', $value);
+            }
+
+            if (is_string($key) && str_starts_with($key, $this->projectDir)) {
+                $key = str_replace($this->projectDir, '', $key);
+                $sanitizedArray[$key] = $value;
+            } elseif (is_array($value)) {
+                $sanitizedArray[$key] = $this->stripProjectDirectory($value);
+            } else {
+                $sanitizedArray[$key] = $value;
+            }
+
+        }
+
+        return $sanitizedArray;
     }
 }

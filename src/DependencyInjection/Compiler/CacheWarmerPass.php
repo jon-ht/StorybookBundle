@@ -19,9 +19,8 @@ class CacheWarmerPass implements CompilerPassInterface
         $cacheWarmerDefinition = $container->getDefinition('storybook.cache_warmer');
 
         $cacheWarmerDefinition
-            ->setArgument(3, $this->getConfig($container, $container->getExtension('storybook')))
-            ->setArgument(4, $this->getConfig($container, $container->getExtension('twig')))
-            ->setArgument(5, $this->getConfig($container, $container->getExtension('twig_component')))
+            ->setArgument(3, $this->getConfig($container, $container->getExtension('twig')))
+            ->setArgument(4, $this->getConfig($container, $container->getExtension('twig_component')))
         ;
     }
 

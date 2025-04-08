@@ -4,7 +4,6 @@ import * as baseBuilder from '@storybook/builder-webpack5';
 import dedent from 'ts-dedent';
 
 export type BuilderOptions = {
-    projectDir?: string;
     storybookCachePath?: string;
     server?: string;
     proxyPaths?: string | string[];
